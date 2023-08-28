@@ -27,6 +27,19 @@ public class BankRepositoryTest {
 
     }
     @Test
+    void testUpdateBankById(){
+        Bank bank=Bank.builder()
+                .name("Tinkoff")
+                .build();
+
+
+       Bank savedBank= bankRepository.saveBank(bank);
+        bankRepository.updateBankById(Bank.builder().name("BSB").build(),savedBank.getId());
+        Bank changedBank=bankRepository.getBankById(savedBank.getId());
+
+        Assertions.assertThat(changedBank.getName()).isEqualTo("BSB");
+    }
+    @Test
     void testSaveBank_FindById(){
         Bank bank=Bank.builder()
                 .name("Tinkoff")
@@ -38,10 +51,11 @@ public class BankRepositoryTest {
         Assertions.assertThat(savedBank.getName()).isEqualTo(retrieveBank.getName());
     }
 
+
     @Test
     void testDeleteBankById(){
         Bank bank=Bank.builder()
-                .id(1)
+                .id(2)
                 .name("Tinkoff")
                 .build();
         bankRepository.saveBank(bank);

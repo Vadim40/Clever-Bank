@@ -4,9 +4,7 @@ import org.CleverBank.Models.Transaction;
 import org.CleverBank.Repository.TransactionRepository;
 import org.assertj.core.api.Assertions;
 import org.h2.jdbcx.JdbcDataSource;
-
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -27,8 +25,8 @@ public class TransactionRepositoryTest {
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE transactions (id SERIAl PRIMARY  KEY, source_account INT, " +
-                    "target_account INT, amount INT, transaction_date DATE)");
+            statement.execute("CREATE TABLE transactions (id SERIAl PRIMARY  KEY, source_account INT," +
+                    " target_account INT, amount INT, transaction_date DATE)");
         }
      transactionRepository= new TransactionRepository(dataSource);
 
@@ -49,6 +47,22 @@ public class TransactionRepositoryTest {
        Assertions.assertThat(savedTransaction.getAmount()).isEqualTo(retrievedTransaction.getAmount());
     }
 
+    @Test
+    void testUpdateTransactionById(){
+            Transaction transaction= Transaction.builder()
+                    .amount(100)
+                    .sourceAccount(1)
+                    .targetAccount(2)
+                    .date(LocalDate.EPOCH)
+                    .build();
+
+        Transaction savedTransaction= transactionRepository.saveTransaction(transaction);
+            transactionRepository.updateTransactionById(Transaction.builder()
+                    .amount(1000).sourceAccount(1).targetAccount(2).date(LocalDate.EPOCH).build(),savedTransaction.getId());
+            Transaction changedTransaction=transactionRepository.getTransactionById(savedTransaction.getId());
+
+            Assertions.assertThat(changedTransaction.getAmount()).isEqualTo(1000);
+    }
     @Test
     void testDeleteTransaction(){
         Transaction transaction= Transaction.builder()

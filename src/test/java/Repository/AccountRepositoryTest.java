@@ -44,6 +44,27 @@ public class AccountRepositoryTest {
         Assertions.assertThat(savedAccount.getAccountNumber()).isEqualTo(retrievedAccount.getAccountNumber());
     }
     @Test
+    void testUpdateAccountById() {
+        Account account = Account.builder()
+                .accountNumber("1234567890")
+                .date(LocalDate.EPOCH)
+                .balance(1000)
+                .bankId(1)
+                .userId(1)
+                .build();
+        Account savedAccount=accountRepository.saveAccount(account);
+        accountRepository.updateAccountById(Account.builder()
+                .accountNumber("9999999999")
+                .date(LocalDate.EPOCH)
+                .balance(1000)
+                .bankId(1)
+                .userId(1)
+                .build(),savedAccount.getId());
+        Account changedAccount=accountRepository.getAccountById(savedAccount.getId());
+
+        Assertions.assertThat(changedAccount.getAccountNumber()).isEqualTo("9999999999");
+    }
+    @Test
     void testDeleteAccountById(){
         Account account=Account.builder()
                 .id(1)

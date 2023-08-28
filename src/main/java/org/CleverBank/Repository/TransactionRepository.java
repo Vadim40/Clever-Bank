@@ -63,7 +63,7 @@ public class TransactionRepository {
             try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int generatedId = generatedKeys.getInt(1);
-                    transaction.setId(generatedId); // Устанавливаем сгенерированный id в объект User
+                    transaction.setId(generatedId);
                 } else {
                     throw new RuntimeException("Failed to get generated transaction id");
                 }
@@ -74,7 +74,7 @@ public class TransactionRepository {
         }
     }
 
-    public Transaction updateTransactionById(Transaction transaction, int transactionId) {
+    public void updateTransactionById(Transaction transaction, int transactionId) {
         String sql = "UPDATE transactions SET source_account = ?, target_account = ?," +
                 " amount = ?, transaction_date = ? WHERE id = ?";
         try (Connection connection = dataSource.getConnection();
@@ -85,9 +85,8 @@ public class TransactionRepository {
             preparedStatement.setDate(4, Date.valueOf(transaction.getDate()));
             preparedStatement.setInt(5, transactionId);
             preparedStatement.executeUpdate();
-            return transaction;
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to udate transaction ", e);
+            throw new RuntimeException("Failed to update transaction ", e);
         }
     }
 

@@ -55,13 +55,13 @@ public class BankRepository {
     public Bank saveBank(Bank bank) {
         String sql = "INSERT INTO bank (name) VALUES (?)";
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, bank.getName());
             preparedStatement.executeUpdate();
             try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int generatedId = generatedKeys.getInt(1);
-                    bank.setId(generatedId); // Устанавливаем сгенерированный id в объект User
+                    bank.setId(generatedId);
                 } else {
                     throw new RuntimeException("Failed to get generated bank id");
                 }
@@ -72,14 +72,13 @@ public class BankRepository {
         }
     }
 
-    public Bank updateBankById(Bank bank, int bankId) {
-        String sql = "UPDATE bank SET name=?,  WHERE id=?";
+    public void updateBankById(Bank bank, int bankId) {
+        String sql = "UPDATE bank SET name=? WHERE id=?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, bank.getName());
             preparedStatement.setInt(2, bankId);
             preparedStatement.executeUpdate();
-            return bank;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update bank", e);
         }

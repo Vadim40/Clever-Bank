@@ -63,7 +63,7 @@ public class AccountRepository {
             try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int generatedId = generatedKeys.getInt(1);
-                    account.setId(generatedId); // Устанавливаем сгенерированный id в объект User
+                    account.setId(generatedId);
                 } else {
                     throw new RuntimeException("Failed to get generated account id");
                 }
@@ -74,7 +74,7 @@ public class AccountRepository {
         }
     }
 
-    public Account updateAccountById(Account account, int accountId) {
+    public void updateAccountById(Account account, int accountId) {
         String sql = "UPDATE account SET account_number = ?, account_date=?, user_id = ?, bank_id = ?, balance = ? WHERE id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -85,7 +85,6 @@ public class AccountRepository {
             preparedStatement.setInt(5, account.getBalance());
             preparedStatement.setInt(6, accountId);
             preparedStatement.executeUpdate();
-            return account;
         } catch (SQLException e) {
             throw new RuntimeException("failed to update account", e);
         }

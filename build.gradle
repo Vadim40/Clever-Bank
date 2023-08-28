@@ -12,6 +12,8 @@ repositories {
 dependencies {
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
     compileOnly 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+
     implementation 'org.junit.jupiter:junit-jupiter-api:5.0.3'
     implementation group: 'com.h2database', name: 'h2', version: '1.4.200'
     testImplementation 'org.assertj:assertj-core:3.21.0'

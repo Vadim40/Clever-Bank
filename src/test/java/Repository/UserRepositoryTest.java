@@ -26,10 +26,8 @@ class UserRepositoryTest {
 
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
-            int created = statement.executeUpdate("CREATE TABLE users(\n" +
-                    "                        id SERIAL PRIMARY KEY ,\n" +
-                    "                        firstname varchar(50),\n" +
-                    "                        lastname varchar(50))");
+            int created = statement.executeUpdate("CREATE TABLE users(id SERIAL PRIMARY KEY ," +
+                    "firstname varchar(50),lastname varchar(50))");
             System.out.println(created);
         }
 
@@ -50,6 +48,18 @@ class UserRepositoryTest {
 
         Assertions.assertThat(savedUser.getId()).isNotNull();
         Assertions.assertThat(savedUser.getFirstname()).isEqualTo(retrievedUser.getFirstname());
+    }
+    @Test
+    void testUpdateUser(){
+        User user = User.builder()
+                .firstname("dan")
+                .lastname("petrov")
+                .build();
+
+        User savedUser=userRepository.saveUser(user);
+       userRepository.updateUserById(User.builder().firstname("Ivan").lastname("Petrov").build(),savedUser.getId());
+       User changedUser=userRepository.getUserById(savedUser.getId());
+        Assertions.assertThat(changedUser.getFirstname()).isEqualTo("Ivan");
     }
 
     @Test

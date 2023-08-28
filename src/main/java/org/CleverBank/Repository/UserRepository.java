@@ -15,9 +15,6 @@ public class UserRepository {
         this.dataSource=dataSource;
     }
 
-    public UserRepository() throws SQLException {
-    }
-
     public User getUserById(int userId) {
         String sql = "SELECT * FROM users WHERE id=?";
         try (Connection connection = dataSource.getConnection();
@@ -62,7 +59,7 @@ public class UserRepository {
             try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int generatedId = generatedKeys.getInt(1);
-                    user.setId(generatedId); // Устанавливаем сгенерированный id в объект User
+                    user.setId(generatedId);
                 } else {
                     throw new RuntimeException("Failed to get generated user id");
                 }
@@ -72,7 +69,7 @@ public class UserRepository {
             throw new RuntimeException("Failed to create user", e);
         }
     }
-    public User updateUserById(User user, int userId) {
+    public void updateUserById(User user, int userId) {
         String sql = "UPDATE users SET firstname=?, lastname=? WHERE id=?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -80,8 +77,6 @@ public class UserRepository {
             preparedStatement.setString(2, user.getLastname());
             preparedStatement.setInt(3, userId);
             preparedStatement.executeUpdate();
-            user.setId(userId);
-            return user;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update user", e);
         }
