@@ -23,7 +23,8 @@ public class AccountRepositoryTest {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("CREATE TABLE account (id SERIAl PRIMARY  KEY, balance INT, " +
-                    "user_id INT,bank_id INT, account_date DATE, account_number VARCHAR(10))");
+                    "user_id INT,bank_id INT, account_date DATE, account_number VARCHAR(10)," +
+                    "last_interest_date DATE)");
         }
       accountRepository=new AccountRepository(dataSource);
 
@@ -33,6 +34,7 @@ public class AccountRepositoryTest {
         Account account=Account.builder()
                 .accountNumber("1234567890")
                 .date(LocalDate.EPOCH)
+                .lastInterestDate(LocalDate.EPOCH)
                 .balance(1000)
                 .bankId(1)
                 .userId(1)
@@ -45,9 +47,10 @@ public class AccountRepositoryTest {
     }
     @Test
     void testUpdateAccountById() {
-        Account account = Account.builder()
+        Account account=Account.builder()
                 .accountNumber("1234567890")
                 .date(LocalDate.EPOCH)
+                .lastInterestDate(LocalDate.EPOCH)
                 .balance(1000)
                 .bankId(1)
                 .userId(1)
@@ -56,6 +59,7 @@ public class AccountRepositoryTest {
         accountRepository.updateAccountById(Account.builder()
                 .accountNumber("9999999999")
                 .date(LocalDate.EPOCH)
+                .lastInterestDate(LocalDate.EPOCH)
                 .balance(1000)
                 .bankId(1)
                 .userId(1)
@@ -70,6 +74,7 @@ public class AccountRepositoryTest {
                 .id(1)
                 .accountNumber("1234567890")
                 .date(LocalDate.EPOCH)
+                .lastInterestDate(LocalDate.EPOCH)
                 .balance(1000)
                 .bankId(1)
                 .userId(1)

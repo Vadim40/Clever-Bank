@@ -5,9 +5,6 @@ package org.CleverBank;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 public class DatabaseUtil {
     private static final String JDBC_URL = "jdbc:postgresql://localhost:5432/bank";

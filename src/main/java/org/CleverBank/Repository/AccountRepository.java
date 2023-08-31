@@ -1,7 +1,6 @@
 package org.CleverBank.Repository;
 
 
-
 import org.CleverBank.Models.Account;
 
 import javax.sql.DataSource;
@@ -11,9 +10,10 @@ import java.util.List;
 
 public class AccountRepository {
 
-    private  DataSource dataSource;
+    private DataSource dataSource;
+
     public AccountRepository(DataSource dataSource) {
-        this.dataSource=dataSource;
+        this.dataSource = dataSource;
     }
 
     public Account getAccountById(int accountId) {
@@ -25,7 +25,7 @@ public class AccountRepository {
                 if (resultSet.next()) {
                     return mapAccountFromResultSet(resultSet);
                 } else {
-                   return null;
+                    return null;
                 }
             }
         } catch (SQLException e) {
@@ -51,14 +51,16 @@ public class AccountRepository {
     }
 
     public Account saveAccount(Account account) {
-        String sql = "INSERT INTO account (account_number, account_date,user_id,bank_id,balance) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO account (account_number, account_date, user_id," +
+                "bank_id, balance, last_interest_date) VALUES (?,?,?,?,?,?)";
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, account.getAccountNumber());
             preparedStatement.setDate(2, Date.valueOf(account.getDate()));
             preparedStatement.setInt(3, account.getUserId());
             preparedStatement.setInt(4, account.getBankId());
-            preparedStatement.setInt(5, account.getBalance());
+            preparedStatement.setDouble(5, account.getBalance());
+            preparedStatement.setDate(6, Date.valueOf(account.getLastInterestDate()));
             preparedStatement.executeUpdate();
             try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
@@ -75,15 +77,17 @@ public class AccountRepository {
     }
 
     public void updateAccountById(Account account, int accountId) {
-        String sql = "UPDATE account SET account_number = ?, account_date=?, user_id = ?, bank_id = ?, balance = ? WHERE id = ?";
+        String sql = "UPDATE account SET account_number = ?, account_date=?, user_id = ?," +
+                " bank_id = ?, balance = ?, last_interest_date=? WHERE id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setString(1, account.getAccountNumber());
             preparedStatement.setDate(2, Date.valueOf(account.getDate()));
             preparedStatement.setInt(3, account.getUserId());
             preparedStatement.setInt(4, account.getBankId());
-            preparedStatement.setInt(5, account.getBalance());
-            preparedStatement.setInt(6, accountId);
+            preparedStatement.setDouble(5, account.getBalance());
+            preparedStatement.setDate(6, Date.valueOf(account.getLastInterestDate()));
+            preparedStatement.setInt(7, accountId);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("failed to update account", e);
@@ -108,7 +112,8 @@ public class AccountRepository {
                 resultSet.getDate("account_date").toLocalDate(),
                 resultSet.getInt("user_id"),
                 resultSet.getInt("bank_id"),
-                resultSet.getInt("balance")
+                resultSet.getDouble("balance"),
+                resultSet.getDate("last_interest_date").toLocalDate()
         );
     }
 }

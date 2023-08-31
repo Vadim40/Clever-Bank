@@ -2,6 +2,7 @@ package org.CleverBank.Repository;
 
 
 import org.CleverBank.Models.Transaction;
+import org.CleverBank.Models.TransactionType;
 
 import javax.sql.DataSource;
 
@@ -26,7 +27,7 @@ public class TransactionRepository {
                 if (resultSet.next()) {
                     return mapTransactionFromResultSet(resultSet);
                 } else {
-                   return null;
+                    return null;
                 }
             }
         } catch (SQLException e) {
@@ -52,13 +53,14 @@ public class TransactionRepository {
     }
 
     public Transaction saveTransaction(Transaction transaction) {
-        String sql = "INSERT INTO transactions (source_account,target_account,amount,transaction_date) VALUES (?,?,?,?)";
+        String sql = "INSERT INTO transactions (source_account,target_account,amount,transaction_type,transaction_date) VALUES (?,?,?,?,?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, transaction.getSourceAccount());
             preparedStatement.setInt(2, transaction.getTargetAccount());
-            preparedStatement.setInt(3, transaction.getAmount());
-            preparedStatement.setDate(4, Date.valueOf(transaction.getDate()));
+            preparedStatement.setDouble(3, transaction.getAmount());
+            preparedStatement.setString(4,transaction.getType().name());
+            preparedStatement.setDate(5, Date.valueOf(transaction.getDate()));
             preparedStatement.executeUpdate();
             try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
@@ -76,14 +78,15 @@ public class TransactionRepository {
 
     public void updateTransactionById(Transaction transaction, int transactionId) {
         String sql = "UPDATE transactions SET source_account = ?, target_account = ?," +
-                " amount = ?, transaction_date = ? WHERE id = ?";
+                " amount = ?,transaction_type=?, transaction_date = ? WHERE id = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, transaction.getSourceAccount());
             preparedStatement.setInt(2, transaction.getTargetAccount());
-            preparedStatement.setInt(3, transaction.getAmount());
-            preparedStatement.setDate(4, Date.valueOf(transaction.getDate()));
-            preparedStatement.setInt(5, transactionId);
+            preparedStatement.setDouble(3, transaction.getAmount());
+            preparedStatement.setString(4,transaction.getType().name());
+            preparedStatement.setDate(5, Date.valueOf(transaction.getDate()));
+            preparedStatement.setInt(6, transactionId);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to update transaction ", e);
@@ -106,7 +109,8 @@ public class TransactionRepository {
                 resultSet.getInt("id"),
                 resultSet.getInt("source_account"),
                 resultSet.getInt("target_account"),
-                resultSet.getInt("amount"),
+                TransactionType.valueOf( resultSet.getString("transaction_type")),
+                resultSet.getDouble("amount"),
                 resultSet.getDate("transaction_date").toLocalDate()
         );
     }

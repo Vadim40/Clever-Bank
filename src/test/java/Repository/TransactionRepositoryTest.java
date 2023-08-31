@@ -1,6 +1,7 @@
 package Repository;
 
 import org.CleverBank.Models.Transaction;
+import org.CleverBank.Models.TransactionType;
 import org.CleverBank.Repository.TransactionRepository;
 import org.assertj.core.api.Assertions;
 import org.h2.jdbcx.JdbcDataSource;
@@ -26,7 +27,7 @@ public class TransactionRepositoryTest {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
             statement.execute("CREATE TABLE transactions (id SERIAl PRIMARY  KEY, source_account INT," +
-                    " target_account INT, amount INT, transaction_date DATE)");
+                    " target_account INT,transaction_type VARCHAR(15), amount INT, transaction_date DATE)");
         }
      transactionRepository= new TransactionRepository(dataSource);
 
@@ -39,6 +40,7 @@ public class TransactionRepositoryTest {
                 .sourceAccount(1)
                 .targetAccount(2)
                 .date(LocalDate.EPOCH)
+                .type(TransactionType.DEPOSIT)
                 .build();
         Transaction savedTransaction= transactionRepository.saveTransaction(transaction);
         Transaction retrievedTransaction=transactionRepository.getTransactionById(savedTransaction.getId());
@@ -49,16 +51,17 @@ public class TransactionRepositoryTest {
 
     @Test
     void testUpdateTransactionById(){
-            Transaction transaction= Transaction.builder()
-                    .amount(100)
-                    .sourceAccount(1)
-                    .targetAccount(2)
-                    .date(LocalDate.EPOCH)
-                    .build();
+        Transaction transaction= Transaction.builder()
+                .amount(100)
+                .sourceAccount(1)
+                .targetAccount(2)
+                .date(LocalDate.EPOCH)
+                .type(TransactionType.DEPOSIT)
+                .build();
 
         Transaction savedTransaction= transactionRepository.saveTransaction(transaction);
             transactionRepository.updateTransactionById(Transaction.builder()
-                    .amount(1000).sourceAccount(1).targetAccount(2).date(LocalDate.EPOCH).build(),savedTransaction.getId());
+                    .amount(1000).sourceAccount(1).targetAccount(2).date(LocalDate.EPOCH).type(TransactionType.DEPOSIT).build(),savedTransaction.getId());
             Transaction changedTransaction=transactionRepository.getTransactionById(savedTransaction.getId());
 
             Assertions.assertThat(changedTransaction.getAmount()).isEqualTo(1000);
@@ -66,11 +69,11 @@ public class TransactionRepositoryTest {
     @Test
     void testDeleteTransaction(){
         Transaction transaction= Transaction.builder()
-                .id(1)
                 .amount(100)
                 .sourceAccount(1)
                 .targetAccount(2)
                 .date(LocalDate.EPOCH)
+                .type(TransactionType.DEPOSIT)
                 .build();
        transactionRepository.saveTransaction(transaction);
        transactionRepository.deleteTransactionById(transaction.getId());

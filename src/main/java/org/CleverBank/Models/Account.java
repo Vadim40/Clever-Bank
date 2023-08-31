@@ -17,5 +17,13 @@ public class Account {
     private LocalDate date;
     private int userId;
     private int bankId;
-    private int balance;
+    private double balance;
+    private LocalDate lastInterestDate ;
+
+    public void decreaseBalance(double amount){
+        balance-=amount;
+    }
+    public void increaseBalance(double amount){
+        balance+=amount;
+    }
 }
