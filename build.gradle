@@ -1,7 +1,11 @@
 plugins {
     id 'java'
+    id "war"
 }
-
+war {
+    archiveName 'clever-bank.war' // Замените на имя вашего WAR-файла
+    from sourceSets.main.output
+}
 group 'org.example'
 version '1.0-SNAPSHOT'
 
@@ -12,6 +16,7 @@ repositories {
 dependencies {
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
     compileOnly 'org.projectlombok:lombok:1.18.28'
+    implementation 'org.yaml:snakeyaml:1.29'
     annotationProcessor 'org.projectlombok:lombok:1.18.28'
     implementation 'javax.servlet:javax.servlet-api:4.0.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'

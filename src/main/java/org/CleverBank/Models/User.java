@@ -5,13 +5,26 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Модель пользователя, представляющая собой информацию о пользователе.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class User {
+    /**
+     * Уникальный идентификатор пользователя.
+     */
     private int id;
-    private String firstname;
-    private String lastname;
 
+    /**
+     * Имя пользователя.
+     */
+    private String firstname;
+
+    /**
+     * Фамилия пользователя.
+     */
+    private String lastname;
 }
